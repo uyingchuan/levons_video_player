@@ -14,9 +14,9 @@ class LevonsPlayerController {
   /// E.g {'240p': 'https://www.w3school.com.cn/example/html5/mov_bbb.mp4'}
   final Map<String, String> sourcesMap;
 
-  /// 默认播放的视频源
+  /// 播放的视频源
   /// null 则默认播放第一个
-  final String? defaultSourceName;
+  final ValueNotifier<String?> sourceName = ValueNotifier(null);
 
   /// 播放器比例，默认 9 / 16
   final double aspectRatio = 9 / 16;
@@ -42,29 +42,55 @@ class LevonsPlayerController {
   final duration = ValueNotifier(Duration.zero);
   Timer? positionTimer;
 
-  late final VideoPlayerController playerController;
+  late VideoPlayerController playerController;
 
   LevonsPlayerController({
     required this.title,
     required this.sourcesMap,
-    this.defaultSourceName,
+    sourceName,
     this.placeholder,
   }) {
     playerKey = GlobalKey();
-    playerController = VideoPlayerController.networkUrl(Uri.parse(
-        sourcesMap[defaultSourceName] ?? sourcesMap.entries.first.value));
+    this.sourceName.value = sourceName ?? sourcesMap.entries.first.key;
+    playerController = VideoPlayerController.networkUrl(
+        Uri.parse(sourcesMap[this.sourceName.value]!));
     playerController.initialize().then((_) => isInitialize.value = true);
     playerController.addListener(_playerListener);
   }
 
+  /// 切换视频源
+  Future<void> changeVideoSource(String sourceName) async {
+    if (sourceName == this.sourceName.value) return;
+    final position = this.position.value;
+    await pauseVideo();
+    isInitialize.value = false;
+    await playerController.dispose();
+    playerController =
+        VideoPlayerController.networkUrl(Uri.parse(sourcesMap[sourceName]!));
+    this.sourceName.value = sourceName;
+    await playerController.initialize().then((_) => isInitialize.value = true);
+    playerController.addListener(_playerListener);
+    await playerController.seekTo(position);
+    await playerController.play();
+  }
+
+  /// 切换播放、暂停
+  void togglePlayerStatus() {
+    if (!isPlaying.value) {
+      playingVideo();
+    } else {
+      pauseVideo();
+    }
+  }
+
   /// 播放视频
-  playingVideo() {
-    playerController.play();
+  void playingVideo() async {
+    await playerController.play();
   }
 
   /// 暂停视频播放
-  pauseVideo() {
-    playerController.pause();
+  Future<void> pauseVideo() async {
+    await playerController.pause();
   }
 
   /// 控制视图的显示与隐藏
@@ -82,16 +108,16 @@ class LevonsPlayerController {
   }
 
   /// 控制播放器的全屏状态
-  toggleFullScreen(context) {
+  toggleFullScreen() {
     if (fullScreen.value) {
-      exitFullScreen(context);
+      exitFullScreen();
     } else {
-      setFullScreen(context);
+      setFullScreen();
     }
   }
 
   /// 全屏播放
-  void setFullScreen(context) async {
+  void setFullScreen() async {
     if (fullScreen.value) return;
     final TransitionRoute<void> route = PageRouteBuilder<void>(
       pageBuilder: (context, animation, secondaryAnimation) {
@@ -109,16 +135,16 @@ class LevonsPlayerController {
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-    await Navigator.of(context).push(route);
+    await Navigator.of(playerKey.currentContext!).push(route);
   }
 
   /// 推出全屏
-  exitFullScreen(context) async {
+  exitFullScreen() async {
     if (!fullScreen.value) return;
     await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     fullScreen.value = false;
-    Navigator.of(context).pop();
+    Navigator.of(playerKey.currentContext!).pop();
   }
 
   _playerListener() {

@@ -1,10 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:levons_video_player/src/levons_player_controller.dart';
-import 'package:levons_video_player/src/utils/date.dart';
-import 'package:video_player/video_player.dart';
+part of 'controls_overlay_widget.dart';
 
-class ControlsWidget extends StatelessWidget {
-  const ControlsWidget({super.key, required this.controller});
+class ControlsButtonWidget extends StatelessWidget {
+  const ControlsButtonWidget({super.key, required this.controller});
 
   final LevonsPlayerController controller;
 
@@ -26,8 +23,7 @@ class ControlsWidget extends StatelessWidget {
                     val ? Icons.pause : Icons.play_arrow,
                     color: Colors.white,
                   ),
-                  onPressed: () =>
-                      val ? controller.pauseVideo() : controller.playingVideo(),
+                  onPressed: () => controller.togglePlayerStatus(),
                 );
               }),
           Flexible(
@@ -54,19 +50,35 @@ class ControlsWidget extends StatelessWidget {
                   );
                 }),
           ),
-          ValueListenableBuilder(
-              valueListenable: controller.fullScreen,
-              builder: (_, val, __) {
-                return IconButton(
-                  padding: EdgeInsets.zero,
-                  iconSize: 26,
-                  icon: Icon(
-                    val ? Icons.fullscreen_exit : Icons.fullscreen,
-                    color: Colors.white,
-                  ),
-                  onPressed: () => controller.toggleFullScreen(context),
-                );
-              })
+          if (!controller.fullScreen.value)
+            ValueListenableBuilder(
+                valueListenable: controller.fullScreen,
+                builder: (_, val, __) {
+                  return IconButton(
+                    padding: EdgeInsets.zero,
+                    iconSize: 26,
+                    icon: Icon(
+                      val ? Icons.fullscreen_exit : Icons.fullscreen,
+                      color: Colors.white,
+                    ),
+                    onPressed: () => controller.toggleFullScreen(),
+                  );
+                }),
+          if (controller.fullScreen.value)
+            GestureDetector(
+              onTap: () => Scaffold.of(context).openEndDrawer(),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: ValueListenableBuilder(
+                    valueListenable: controller.sourceName,
+                    builder: (_, val, ___) {
+                      return Text(
+                        controller.sourceName.value ?? '',
+                        style: const TextStyle(color: Colors.white),
+                      );
+                    }),
+              ),
+            ),
         ],
       ),
     );

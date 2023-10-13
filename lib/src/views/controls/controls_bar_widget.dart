@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:levons_video_player/src/levons_player_controller.dart';
+part of 'controls_overlay_widget.dart';
 
 class ControlsBarWidget extends StatelessWidget {
   const ControlsBarWidget({super.key, required this.controller});
@@ -22,7 +21,7 @@ class ControlsBarWidget extends StatelessWidget {
                 Icons.arrow_back,
                 color: Colors.white,
               ),
-              onPressed: () => controller.toggleControlsView(),
+              onPressed: () => controller.toggleFullScreen(),
             ),
           Container(
             margin: const EdgeInsets.only(left: 10),
@@ -31,6 +30,17 @@ class ControlsBarWidget extends StatelessWidget {
               style: const TextStyle(color: Colors.white),
             ),
           ),
+          const Spacer(),
+          // if (controller.fullScreen.value)
+          //   IconButton(
+          //     padding: EdgeInsets.zero,
+          //     iconSize: 20,
+          //     icon: const Icon(
+          //       Icons.settings,
+          //       color: Colors.white,
+          //     ),
+          //     onPressed: () => controller.toggleControlsView(),
+          //   ),
         ],
       ),
     );

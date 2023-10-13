@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 import '../levons_player_controller.dart';
-import 'controls_overlay_widget.dart';
+import 'controls/controls_overlay_widget.dart';
 
 class VideoPlayerWidget extends StatelessWidget {
   const VideoPlayerWidget({super.key, required this.controller});
