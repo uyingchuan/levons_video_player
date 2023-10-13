@@ -1,7 +1,4 @@
 library levons_video_player;
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+export 'src/controllers/player_widget_controller.dart';
+export 'src/views/video_player_widget.dart';
