@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:levons_video_player/src/controllers/player_widget_controller.dart';
+import 'package:levons_video_player/src/levons_player_controller.dart';
 import 'package:levons_video_player/src/utils/date.dart';
 import 'package:video_player/video_player.dart';
 
 class ControlsWidget extends StatelessWidget {
-  const ControlsWidget({super.key, required this.playerController});
+  const ControlsWidget({super.key, required this.controller});
 
-  final VideoPlayerWidgetController playerController;
+  final LevonsPlayerController controller;
 
   @override
   Widget build(BuildContext context) {
-    final overlayController = playerController.controlsController;
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: MediaQuery.paddingOf(context).left,
@@ -18,7 +17,7 @@ class ControlsWidget extends StatelessWidget {
       child: Row(
         children: [
           ValueListenableBuilder(
-              valueListenable: playerController.isPlaying,
+              valueListenable: controller.isPlaying,
               builder: (_, val, __) {
                 return IconButton(
                   padding: EdgeInsets.zero,
@@ -27,14 +26,13 @@ class ControlsWidget extends StatelessWidget {
                     val ? Icons.pause : Icons.play_arrow,
                     color: Colors.white,
                   ),
-                  onPressed: () => val
-                      ? playerController.pauseVideo()
-                      : playerController.playingVideo(),
+                  onPressed: () =>
+                      val ? controller.pauseVideo() : controller.playingVideo(),
                 );
               }),
           Flexible(
             child: VideoProgressIndicator(
-              playerController.playerController,
+              controller.playerController,
               allowScrubbing: true,
               padding: EdgeInsets.zero,
               colors: const VideoProgressColors(
@@ -47,9 +45,9 @@ class ControlsWidget extends StatelessWidget {
           Container(
             margin: const EdgeInsets.only(left: 10),
             child: ValueListenableBuilder(
-                valueListenable: playerController.position,
+                valueListenable: controller.position,
                 builder: (_, val, ___) {
-                  final duration = playerController.duration.value;
+                  final duration = controller.duration.value;
                   return Text(
                     '${DateUtil.formatDuration(val)}/${DateUtil.formatDuration(duration)}',
                     style: const TextStyle(color: Colors.white),
@@ -57,7 +55,7 @@ class ControlsWidget extends StatelessWidget {
                 }),
           ),
           ValueListenableBuilder(
-              valueListenable: overlayController.fullScreen,
+              valueListenable: controller.fullScreen,
               builder: (_, val, __) {
                 return IconButton(
                   padding: EdgeInsets.zero,
@@ -66,7 +64,7 @@ class ControlsWidget extends StatelessWidget {
                     val ? Icons.fullscreen_exit : Icons.fullscreen,
                     color: Colors.white,
                   ),
-                  onPressed: () => playerController.toggleFullScreen(context),
+                  onPressed: () => controller.toggleFullScreen(context),
                 );
               })
         ],

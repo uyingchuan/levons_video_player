@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:levons_video_player/src/controllers/player_widget_controller.dart';
+import 'package:levons_video_player/src/levons_player_controller.dart';
 
 class ControlsBarWidget extends StatelessWidget {
-  const ControlsBarWidget({super.key, required this.playerController});
+  const ControlsBarWidget({super.key, required this.controller});
 
-  final VideoPlayerWidgetController playerController;
+  final LevonsPlayerController controller;
 
   @override
   Widget build(BuildContext context) {
-    final overlayController = playerController.controlsController;
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: MediaQuery.paddingOf(context).left,
       ),
       child: Row(
         children: [
-          if (overlayController.fullScreen.value)
+          if (controller.fullScreen.value)
             IconButton(
               padding: EdgeInsets.zero,
               iconSize: 20,
@@ -23,12 +22,12 @@ class ControlsBarWidget extends StatelessWidget {
                 Icons.arrow_back,
                 color: Colors.white,
               ),
-              onPressed: () => overlayController.toggleControlsView(),
+              onPressed: () => controller.toggleControlsView(),
             ),
           Container(
             margin: const EdgeInsets.only(left: 10),
             child: Text(
-              playerController.title,
+              controller.title,
               style: const TextStyle(color: Colors.white),
             ),
           ),

@@ -5,9 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:levons_video_player/src/views/fullscreen_video_player.dart';
 import 'package:video_player/video_player.dart';
 
-import 'controls_overlay_controller.dart';
+class LevonsPlayerController {
+  late final GlobalKey playerKey;
 
-class VideoPlayerWidgetController {
   final String title;
 
   /// 可提供多个视频源，键名为该源的名称，用来提示切换源
@@ -24,6 +24,15 @@ class VideoPlayerWidgetController {
   /// 播放器初始化阶段视图
   final Widget? placeholder;
 
+  /// 控制播放器控件视图展示隐藏
+  final controlsVisible = ValueNotifier(false);
+  final visibleDuration = const Duration(seconds: 3);
+  final transitionDuration = const Duration(milliseconds: 300);
+  Timer? controlsTimer;
+
+  /// 控制全屏播放
+  final fullScreen = ValueNotifier(false);
+
   final isInitialize = ValueNotifier(false);
   final isPlaying = ValueNotifier(false);
   final isBuffering = ValueNotifier(false);
@@ -35,38 +44,55 @@ class VideoPlayerWidgetController {
 
   late final VideoPlayerController playerController;
 
-  /// 播放器控件
-  final controlsController = ControlsOverlayController();
-
-  VideoPlayerWidgetController({
+  LevonsPlayerController({
     required this.title,
     required this.sourcesMap,
     this.defaultSourceName,
     this.placeholder,
   }) {
+    playerKey = GlobalKey();
     playerController = VideoPlayerController.networkUrl(Uri.parse(
         sourcesMap[defaultSourceName] ?? sourcesMap.entries.first.value));
     playerController.initialize().then((_) => isInitialize.value = true);
     playerController.addListener(_playerListener);
   }
 
+  /// 播放视频
   playingVideo() {
     playerController.play();
   }
 
+  /// 暂停视频播放
   pauseVideo() {
     playerController.pause();
   }
 
+  /// 控制视图的显示与隐藏
+  void toggleControlsView() {
+    controlsVisible.value = !controlsVisible.value;
+    _resetControlViewTimer();
+  }
+
+  // 重置控制视图的自动隐藏定时器
+  _resetControlViewTimer() {
+    controlsTimer?.cancel();
+    controlsTimer = Timer(visibleDuration, () {
+      controlsVisible.value = false;
+    });
+  }
+
+  /// 控制播放器的全屏状态
   toggleFullScreen(context) {
-    if (controlsController.fullScreen.value) {
+    if (fullScreen.value) {
       exitFullScreen(context);
     } else {
       setFullScreen(context);
     }
   }
 
-  setFullScreen(context) {
+  /// 全屏播放
+  void setFullScreen(context) async {
+    if (fullScreen.value) return;
     final TransitionRoute<void> route = PageRouteBuilder<void>(
       pageBuilder: (context, animation, secondaryAnimation) {
         return AnimatedBuilder(
@@ -79,17 +105,19 @@ class VideoPlayerWidgetController {
         );
       },
     );
-    controlsController.fullScreen.value = true;
+    fullScreen.value = true;
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
-    Navigator.of(context).push(route);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    await Navigator.of(context).push(route);
   }
 
+  /// 推出全屏
   exitFullScreen(context) async {
+    if (!fullScreen.value) return;
     await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    controlsController.fullScreen.value = false;
+    fullScreen.value = false;
     Navigator.of(context).pop();
   }
 

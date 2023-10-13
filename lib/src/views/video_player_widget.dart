@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
-import '../../levons_video_player.dart';
-import 'widgets/controls_overlay_widget.dart';
+import '../levons_player_controller.dart';
+import 'controls_overlay_widget.dart';
 
 class VideoPlayerWidget extends StatelessWidget {
   const VideoPlayerWidget({super.key, required this.controller});
 
-  final VideoPlayerWidgetController controller;
+  final LevonsPlayerController controller;
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (_, constraints) {
       return Container(
         width: constraints.maxWidth,
-        height: controller.controlsController.fullScreen.value
+        height: controller.fullScreen.value
             ? MediaQuery.of(context).size.height
             : constraints.maxWidth * controller.aspectRatio,
         color: Colors.black,
@@ -41,13 +41,13 @@ class VideoPlayerWidget extends StatelessWidget {
         AspectRatio(
           aspectRatio: controller.playerController.value.aspectRatio,
           child: Hero(
-            tag: 'Player',
+            tag: 'Video Player',
             child: VideoPlayer(controller.playerController),
           ),
         ),
 
         // controls overlay
-        ControlsOverlay(playerController: controller),
+        ControlsOverlay(controller: controller),
       ],
     );
   }

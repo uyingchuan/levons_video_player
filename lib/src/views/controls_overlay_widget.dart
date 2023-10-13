@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:levons_video_player/levons_video_player.dart';
 
+import '../levons_player_controller.dart';
 import 'controls_bar_widget.dart';
 import 'controls_widget.dart';
 
 class ControlsOverlay extends StatelessWidget {
-  const ControlsOverlay({super.key, required this.playerController});
+  const ControlsOverlay({super.key, required this.controller});
 
-  final VideoPlayerWidgetController playerController;
+  final LevonsPlayerController controller;
 
   @override
   Widget build(BuildContext context) {
-    final overlayController = playerController.controlsController;
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
-      onTap: () => overlayController.toggleControlsView(),
+      onTap: () => controller.toggleControlsView(),
       child: LayoutBuilder(builder: (_, constraints) {
         return Stack(
           children: [
@@ -22,11 +21,11 @@ class ControlsOverlay extends StatelessWidget {
             Positioned(
               top: 0,
               child: ValueListenableBuilder(
-                  valueListenable: overlayController.visible,
+                  valueListenable: controller.controlsVisible,
                   builder: (_, val, ___) {
                     return AnimatedSwitcher(
-                      duration: overlayController.transitionDuration,
-                      reverseDuration: overlayController.transitionDuration,
+                      duration: controller.transitionDuration,
+                      reverseDuration: controller.transitionDuration,
                       child: val
                           ? Container(
                               height: 40,
@@ -42,7 +41,7 @@ class ControlsOverlay extends StatelessWidget {
                                 ),
                               ),
                               child: ControlsBarWidget(
-                                playerController: playerController,
+                                controller: controller,
                               ),
                             )
                           : null,
@@ -54,11 +53,11 @@ class ControlsOverlay extends StatelessWidget {
             Positioned(
               bottom: 0,
               child: ValueListenableBuilder(
-                  valueListenable: overlayController.visible,
+                  valueListenable: controller.controlsVisible,
                   builder: (_, val, ___) {
                     return AnimatedSwitcher(
-                      duration: overlayController.transitionDuration,
-                      reverseDuration: overlayController.transitionDuration,
+                      duration: controller.transitionDuration,
+                      reverseDuration: controller.transitionDuration,
                       child: val
                           ? Container(
                               height: 40,
@@ -74,7 +73,7 @@ class ControlsOverlay extends StatelessWidget {
                                 ),
                               ),
                               child: ControlsWidget(
-                                playerController: playerController,
+                                controller: controller,
                               ),
                             )
                           : null,

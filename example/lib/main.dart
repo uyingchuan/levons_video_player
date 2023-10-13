@@ -12,6 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter example',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
@@ -29,12 +30,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late final VideoPlayerWidgetController controller;
+  late final LevonsPlayerController controller;
 
   @override
   void initState() {
     super.initState();
-    controller = VideoPlayerWidgetController(
+    controller = LevonsPlayerController(
       title: '测试视频',
       sourcesMap: {
         '240p': 'https://www.w3school.com.cn/example/html5/mov_bbb.mp4',
