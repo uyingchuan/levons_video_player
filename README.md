@@ -1,39 +1,40 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# Levons Video Player
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
+对[`video_player`](https://pub.dev/packages/video_player)插件封装了一层控件
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
-
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+### Usage
 
 ```dart
-const like = 'sample';
+class _MyHomePageState extends State<MyHomePage> {
+  late final LevonsPlayerController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = LevonsPlayerController(
+      title: '测试视频',
+      sourcesMap: {
+        '240p': 'https://www.w3school.com.cn/example/html5/mov_bbb.mp4',
+        '480p': 'https://www.w3school.com.cn/example/html5/mov_bbb.mp4',
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Levons Video Player Example'),
+      ),
+      body: LevonsPlayerWidget(controller: controller),
+    );
+  }
+}
 ```
 
-## Additional information
+### Feature
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+- [x] 全屏
+- [x] 切换视频源
+- [ ] 自定义控件
+- [ ] 调整播放速度
