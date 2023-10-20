@@ -1,14 +1,16 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:levons_video_player/src/views/fullscreen_video_player.dart';
 import 'package:video_player/video_player.dart';
+
+import 'levons_player_settings.dart';
+import 'views/fullscreen_video_player.dart';
 
 class LevonsPlayerController {
   late final GlobalKey playerKey;
 
-  final String title;
+  final LevonsPlayerSettings settings;
 
   /// 可提供多个视频源，键名为该源的名称，用来提示切换源
   /// E.g {'240p': 'https://www.w3school.com.cn/example/html5/mov_bbb.mp4'}
@@ -17,12 +19,6 @@ class LevonsPlayerController {
   /// 播放的视频源
   /// null 则默认播放第一个
   final ValueNotifier<String?> sourceName = ValueNotifier(null);
-
-  /// 播放器比例，默认 9 / 16
-  final double aspectRatio = 9 / 16;
-
-  /// 播放器初始化阶段视图
-  final Widget? placeholder;
 
   /// 控制播放器控件视图展示隐藏
   final controlsVisible = ValueNotifier(false);
@@ -45,16 +41,17 @@ class LevonsPlayerController {
 
   late VideoPlayerController playerController;
 
+  /// [defaultSourceName] 控制player初始化后自动播放的视频源
+  /// 为空则自动播放[sourcesMap]中第一个
   LevonsPlayerController({
-    required this.title,
+    required this.settings,
     required this.sourcesMap,
-    sourceName,
-    this.placeholder,
+    defaultSourceName,
   }) {
     playerKey = GlobalKey();
-    this.sourceName.value = sourceName ?? sourcesMap.entries.first.key;
+    sourceName.value = defaultSourceName ?? sourcesMap.entries.first.key;
     playerController = VideoPlayerController.networkUrl(
-        Uri.parse(sourcesMap[this.sourceName.value]!));
+        Uri.parse(sourcesMap[sourceName.value]!));
     playerController.initialize();
     playerController.addListener(_playerListener);
   }

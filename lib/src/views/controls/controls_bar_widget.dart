@@ -23,13 +23,14 @@ class ControlsBarWidget extends StatelessWidget {
               ),
               onPressed: () => controller.toggleFullScreen(),
             ),
-          Container(
-            margin: const EdgeInsets.only(left: 10),
-            child: Text(
-              controller.title,
-              style: const TextStyle(color: Colors.white),
+          if (controller.settings.titleVisible)
+            Container(
+              margin: const EdgeInsets.only(left: 10),
+              child: Text(
+                controller.settings.title,
+                style: const TextStyle(color: Colors.white),
+              ),
             ),
-          ),
           const Spacer(),
           // if (controller.fullScreen.value)
           //   IconButton(

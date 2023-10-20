@@ -16,7 +16,7 @@ class VideoPlayerWidget extends StatelessWidget {
         width: constraints.maxWidth,
         height: controller.fullScreen.value
             ? MediaQuery.of(context).size.height
-            : constraints.maxWidth * controller.aspectRatio,
+            : constraints.maxWidth * controller.settings.aspectRatio,
         color: Colors.black,
         child: ValueListenableBuilder(
             valueListenable: controller.isInitialized,
@@ -24,7 +24,7 @@ class VideoPlayerWidget extends StatelessWidget {
               if (val) {
                 return _buildPlayerView();
               }
-              return controller.placeholder ??
+              return controller.settings.placeholder ??
                   const Center(
                     child: CircularProgressIndicator(),
                   );
@@ -54,11 +54,12 @@ class VideoPlayerWidget extends StatelessWidget {
             valueListenable: controller.isBuffering,
             builder: (_, val, __) {
               if (!val) return const SizedBox.shrink();
-              return const Positioned.fill(
-                child: Center(
-                  child: CircularProgressIndicator(color: Colors.blue),
-                ),
-              );
+              return controller.settings.buffering ??
+                  const Positioned.fill(
+                    child: Center(
+                      child: CircularProgressIndicator(color: Colors.blue),
+                    ),
+                  );
             }),
       ],
     );
