@@ -19,7 +19,7 @@ class VideoPlayerWidget extends StatelessWidget {
             : constraints.maxWidth * controller.aspectRatio,
         color: Colors.black,
         child: ValueListenableBuilder(
-            valueListenable: controller.isInitialize,
+            valueListenable: controller.isInitialized,
             builder: (_, val, __) {
               if (val) {
                 return _buildPlayerView();
@@ -48,6 +48,18 @@ class VideoPlayerWidget extends StatelessWidget {
 
         // controls overlay
         ControlsOverlay(controller: controller),
+
+        // buffering
+        ValueListenableBuilder(
+            valueListenable: controller.isBuffering,
+            builder: (_, val, __) {
+              if (!val) return const SizedBox.shrink();
+              return const Positioned.fill(
+                child: Center(
+                  child: CircularProgressIndicator(color: Colors.blue),
+                ),
+              );
+            }),
       ],
     );
   }

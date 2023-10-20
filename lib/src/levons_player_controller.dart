@@ -33,10 +33,11 @@ class LevonsPlayerController {
   /// 控制全屏播放
   final fullScreen = ValueNotifier(false);
 
-  final isInitialize = ValueNotifier(false);
+  final isInitialized = ValueNotifier(false);
   final isPlaying = ValueNotifier(false);
   final isBuffering = ValueNotifier(false);
   final isFinished = ValueNotifier(false);
+  Timer? initialTimer;
 
   final position = ValueNotifier(Duration.zero);
   final duration = ValueNotifier(Duration.zero);
@@ -54,7 +55,7 @@ class LevonsPlayerController {
     this.sourceName.value = sourceName ?? sourcesMap.entries.first.key;
     playerController = VideoPlayerController.networkUrl(
         Uri.parse(sourcesMap[this.sourceName.value]!));
-    playerController.initialize().then((_) => isInitialize.value = true);
+    playerController.initialize();
     playerController.addListener(_playerListener);
   }
 
@@ -63,12 +64,12 @@ class LevonsPlayerController {
     if (sourceName == this.sourceName.value) return;
     final position = this.position.value;
     await pauseVideo();
-    isInitialize.value = false;
+    isInitialized.value = false;
     await playerController.dispose();
     playerController =
         VideoPlayerController.networkUrl(Uri.parse(sourcesMap[sourceName]!));
     this.sourceName.value = sourceName;
-    await playerController.initialize().then((_) => isInitialize.value = true);
+    await playerController.initialize();
     playerController.addListener(_playerListener);
     await playerController.seekTo(position);
     await playerController.play();
@@ -138,7 +139,7 @@ class LevonsPlayerController {
     await Navigator.of(playerKey.currentContext!).push(route);
   }
 
-  /// 推出全屏
+  /// 退出全屏
   exitFullScreen() async {
     if (!fullScreen.value) return;
     await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
@@ -148,13 +149,30 @@ class LevonsPlayerController {
   }
 
   _playerListener() {
+    _playerInitialListener();
     _playerPositionListener();
     _playerStatusListener();
+  }
+
+  _playerInitialListener() {
+    isInitialized.value = playerController.value.isInitialized;
+    if (!isInitialized.value) {
+      initialTimer?.cancel();
+      initialTimer = Timer(const Duration(seconds: 5), () {
+        playerController
+            .initialize()
+            .whenComplete(() => _playerInitialListener());
+      });
+    }
   }
 
   _playerPositionListener() {
     duration.value = playerController.value.duration;
     position.value = playerController.value.position;
+    if (!playerController.value.isInitialized) {
+      isBuffering.value = true;
+      return;
+    }
     if (!playerController.value.isPlaying) {
       positionTimer?.cancel();
       return;
@@ -165,15 +183,22 @@ class LevonsPlayerController {
   }
 
   _playerStatusListener() {
+    if (playerController.value.isCompleted) {
+      isBuffering.value = false;
+      isPlaying.value = false;
+      isFinished.value = true;
+      return;
+    }
     isPlaying.value = playerController.value.isPlaying;
     isBuffering.value = playerController.value.isBuffering;
-    isFinished.value = playerController.value.isCompleted;
   }
 
   void dispose() {
     positionTimer?.cancel();
+    initialTimer?.cancel();
+    controlsTimer?.cancel();
     playerController.dispose();
-    isInitialize.dispose();
+    isInitialized.dispose();
     isPlaying.dispose();
     isBuffering.dispose();
     isFinished.dispose();
