@@ -12,7 +12,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     controller = LevonsPlayerController(
-      title: '测试视频',
+      settings: const LevonsPlayerSettings(title: '测试视频'),
       sourcesMap: {
         '240p': 'https://www.w3school.com.cn/example/html5/mov_bbb.mp4',
         '480p': 'https://www.w3school.com.cn/example/html5/mov_bbb.mp4',
