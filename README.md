@@ -37,4 +37,4 @@ class _MyHomePageState extends State<MyHomePage> {
 - [x] 全屏
 - [x] 切换视频源
 - [x] 自定义控件
-- [ ] 调整播放速度
+- [x] 调整播放速度
