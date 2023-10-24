@@ -39,7 +39,7 @@ class ControlsBottomWidget extends StatelessWidget {
             ),
           ),
           Container(
-            margin: const EdgeInsets.only(left: 10),
+            margin: const EdgeInsets.only(left: 10, right: 10),
             child: ValueListenableBuilder(
                 valueListenable: controller.position,
                 builder: (_, val, ___) {
@@ -68,10 +68,28 @@ class ControlsBottomWidget extends StatelessWidget {
             GestureDetector(
               onTap: () => openEndDrawer(
                 context: context,
+                drawer: _SpeedListDrawer(controller: controller),
+              ),
+              child: Container(
+                padding: const EdgeInsets.only(right: 16),
+                child: ValueListenableBuilder(
+                    valueListenable: controller.speed,
+                    builder: (_, val, ___) {
+                      return Text(
+                        '${controller.speed.value}X',
+                        style: const TextStyle(color: Colors.white),
+                      );
+                    }),
+              ),
+            ),
+          if (controller.fullScreen.value)
+            GestureDetector(
+              onTap: () => openEndDrawer(
+                context: context,
                 drawer: _SourceListDrawer(controller: controller),
               ),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.only(right: 16),
                 child: ValueListenableBuilder(
                     valueListenable: controller.sourceName,
                     builder: (_, val, ___) {
@@ -88,6 +106,57 @@ class ControlsBottomWidget extends StatelessWidget {
   }
 }
 
+class _SpeedListDrawer extends StatelessWidget {
+  const _SpeedListDrawer({required this.controller});
+
+  final LevonsPlayerController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {},
+      child: Container(
+        width: 240,
+        height: double.infinity,
+        alignment: Alignment.center,
+        color: Colors.black54,
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            for (var speed in controller.speeds)
+              GestureDetector(
+                onTap: () {
+                  controller.changeVideoSpeed(speed);
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(
+                    color: Colors.transparent,
+                  ),
+                  child: ValueListenableBuilder(
+                    valueListenable: controller.speed,
+                    builder: (_, val, __) {
+                      return Text(
+                        '${speed}X',
+                        style: TextStyle(
+                          color: val == speed
+                              ? Theme.of(context).colorScheme.primary
+                              : Colors.white,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _SourceListDrawer extends StatelessWidget {
   const _SourceListDrawer({required this.controller});
 
@@ -98,10 +167,10 @@ class _SourceListDrawer extends StatelessWidget {
     return GestureDetector(
       onTap: () {},
       child: Container(
-        width: 300,
+        width: 240,
         height: double.infinity,
         alignment: Alignment.center,
-        color: Colors.black,
+        color: Colors.black54,
         child: ListView(
           shrinkWrap: true,
           children: [

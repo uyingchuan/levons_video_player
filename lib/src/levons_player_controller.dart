@@ -16,6 +16,10 @@ class LevonsPlayerController {
   /// E.g {'240p': 'https://www.w3school.com.cn/example/html5/mov_bbb.mp4'}
   final Map<String, String> sourcesMap;
 
+  /// 视频的播放速度
+  final ValueNotifier<double> speed = ValueNotifier(1.0);
+  final List<double> speeds = [2.0, 1.5, 1.25, 1.0, 0.75, 0.5];
+
   /// 播放的视频源
   /// null 则默认播放第一个
   final ValueNotifier<String?> sourceName = ValueNotifier(null);
@@ -54,6 +58,14 @@ class LevonsPlayerController {
         Uri.parse(sourcesMap[sourceName.value]!));
     playerController.initialize();
     playerController.addListener(_playerListener);
+  }
+
+  /// 切换视频播放速度
+  Future<void> changeVideoSpeed(double speed) async {
+    if (this.speed.value == speed) return;
+    playerController.setPlaybackSpeed(speed);
+    this.speed.value = speed;
+    playingVideo();
   }
 
   /// 切换视频源
@@ -130,7 +142,8 @@ class LevonsPlayerController {
       },
     );
     fullScreen.value = true;
-    SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight]);
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     await Navigator.of(playerKey.currentContext!).push(route);
   }
