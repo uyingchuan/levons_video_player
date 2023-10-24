@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:levons_video_player/src/drawer/drawer.dart';
 import 'package:levons_video_player/src/levons_player_controller.dart';
 import 'package:levons_video_player/src/utils/date.dart';
 import 'package:video_player/video_player.dart';
@@ -65,7 +66,7 @@ class ControlsOverlay extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              child: ControlsButtonWidget(
+                              child: ControlsBottomWidget(
                                 controller: controller,
                               ),
                             ),

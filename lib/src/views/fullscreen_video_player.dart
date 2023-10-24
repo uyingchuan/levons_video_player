@@ -22,43 +22,6 @@ class FullscreenVideoPlayer extends StatelessWidget {
           color: Colors.black,
           child: VideoPlayerWidget(controller: controller),
         ),
-        endDrawer: Drawer(
-          backgroundColor: Colors.black,
-          child: Center(
-            child: ListView(
-              shrinkWrap: true,
-              children: [
-                for (var source in controller.sourcesMap.entries)
-                  GestureDetector(
-                    onTap: () {
-                      controller.changeVideoSource(source.key);
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      alignment: Alignment.center,
-                      decoration: const BoxDecoration(
-                        color: Colors.transparent,
-                      ),
-                      child: ValueListenableBuilder(
-                        valueListenable: controller.sourceName,
-                        builder: (_, val, __) {
-                          return Text(
-                            source.key,
-                            style: TextStyle(
-                              color: val == source.key
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Colors.white,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  )
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }

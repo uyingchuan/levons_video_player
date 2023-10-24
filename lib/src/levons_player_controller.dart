@@ -130,8 +130,7 @@ class LevonsPlayerController {
       },
     );
     fullScreen.value = true;
-    SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+    SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight]);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     await Navigator.of(playerKey.currentContext!).push(route);
   }
@@ -191,6 +190,8 @@ class LevonsPlayerController {
   }
 
   void dispose() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     positionTimer?.cancel();
     initialTimer?.cancel();
     controlsTimer?.cancel();

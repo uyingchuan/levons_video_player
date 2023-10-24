@@ -1,7 +1,7 @@
 part of 'controls_overlay_widget.dart';
 
-class ControlsButtonWidget extends StatelessWidget {
-  const ControlsButtonWidget({super.key, required this.controller});
+class ControlsBottomWidget extends StatelessWidget {
+  const ControlsBottomWidget({super.key, required this.controller});
 
   final LevonsPlayerController controller;
 
@@ -66,7 +66,10 @@ class ControlsButtonWidget extends StatelessWidget {
                 }),
           if (controller.fullScreen.value)
             GestureDetector(
-              onTap: () => Scaffold.of(context).openEndDrawer(),
+              onTap: () => openEndDrawer(
+                context: context,
+                drawer: _SourceListDrawer(controller: controller),
+              ),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: ValueListenableBuilder(
@@ -80,6 +83,57 @@ class ControlsButtonWidget extends StatelessWidget {
               ),
             ),
         ],
+      ),
+    );
+  }
+}
+
+class _SourceListDrawer extends StatelessWidget {
+  const _SourceListDrawer({required this.controller});
+
+  final LevonsPlayerController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {},
+      child: Container(
+        width: 300,
+        height: double.infinity,
+        alignment: Alignment.center,
+        color: Colors.black,
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            for (var source in controller.sourcesMap.entries)
+              GestureDetector(
+                onTap: () {
+                  controller.changeVideoSource(source.key);
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(
+                    color: Colors.transparent,
+                  ),
+                  child: ValueListenableBuilder(
+                    valueListenable: controller.sourceName,
+                    builder: (_, val, __) {
+                      return Text(
+                        source.key,
+                        style: TextStyle(
+                          color: val == source.key
+                              ? Theme.of(context).colorScheme.primary
+                              : Colors.white,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              )
+          ],
+        ),
       ),
     );
   }
